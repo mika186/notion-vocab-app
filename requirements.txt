@@ -2,3 +2,4 @@ Flask
 notion-client
 openai
 requests
+gunicorn app:app
