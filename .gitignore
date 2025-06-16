@@ -1,0 +1,9 @@
+# Python関連
+__pycache__/
+*.pyc
+
+# 環境変数ファイル（APIキーなどの機密情報）
+.env
+
+# VSCodeなどのエディタ設定
+.vscode/
