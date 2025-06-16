@@ -3,3 +3,4 @@ notion-client
 openai
 requests
 gunicorn
+python-dotenv
