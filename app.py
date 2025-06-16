@@ -119,7 +119,7 @@ def format_example_sentences(raw_text):
 def render_related_words(raw_text):
     blocks = []
     for label, emoji in [("派生語", "📘"), ("類義語", "📗"), ("反意語", "📕")]:
-        match = re.search(f"{label}[:：](.*?)(?=\n[A-Za-z\u3040-\u30FF\u4E00-\u9FFF]+[:：]|\Z)", raw_text, re.DOTALL)
+        match = re.search(rf"{label}[:：](.*?)(?=\n[A-Za-z\u3040-\u30FF\u4E00-\u9FFF]+[:：]|\Z)", raw_text, re.DOTALL)
         content = match.group(1).strip() if match else "該当情報が取得できませんでした。"
         content = f"{emoji} {label}\n{content.strip()}"
         blocks.append(content)
