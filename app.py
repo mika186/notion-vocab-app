@@ -17,6 +17,10 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 notion = Client(auth=NOTION_API_KEY)
 openai = OpenAI(api_key=OPENAI_API_KEY)
 
+print("✅ NOTION_DATABASE_ID:", NOTION_DATABASE_ID)
+print("✅ OPENAI_API_KEY:", "あり" if OPENAI_API_KEY else "なし")
+print("✅ NOTION_API_KEY:", "あり" if NOTION_API_KEY else "なし")
+
 app = Flask(__name__)
 
 PROPERTY_MAP = {
@@ -73,7 +77,7 @@ def ask_gpt_about(word):
 ---
     """
     response = openai.chat.completions.create(
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": system_msg},
             {"role": "user", "content": word}
@@ -182,4 +186,5 @@ def add_word():
     return f"✅ '{word}' をNotionに追加しました！"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
