@@ -77,7 +77,7 @@ def ask_gpt_about(word):
 ---
 """
     response = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": system_msg},
             {"role": "user", "content": word}
