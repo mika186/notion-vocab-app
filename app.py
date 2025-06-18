@@ -4,18 +4,17 @@ import json
 import requests
 from flask import Flask, request
 from notion_client import Client
-from openai import OpenAI
-from dotenv import load_dotenv  # これを追加！
+import openai  # ← ここ修正
+from dotenv import load_dotenv
 
-load_dotenv()  # .envファイルを読み込む！
+load_dotenv()
 
-# --- 環境変数から読み込み（直接キーを記述しない） ---
 NOTION_API_KEY = os.getenv("NOTION_API_KEY")
 NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 notion = Client(auth=NOTION_API_KEY)
-openai = OpenAI(api_key=OPENAI_API_KEY)
+openai.api_key = OPENAI_API_KEY  # ← ここ修正
 
 print("✅ NOTION_DATABASE_ID:", NOTION_DATABASE_ID)
 print("✅ OPENAI_API_KEY:", "あり" if OPENAI_API_KEY else "なし")
@@ -50,7 +49,7 @@ def ask_gpt_about(word):
     system_msg = """
 あなたは語源や英語教育に精通した英語教師です。
 以下の英単語について、次の13の観点で簡潔に出力してください：
-頻度（よく使う、そこそこ使う、たまに使う、あまり使わない）、
+頻度（よく使う、そこそこ使う、たまに使わない、あまり使わない）、
 難易度（A1〜C2のCEFR基準）、品詞（形容詞、動詞、名詞、副詞など）、
 フォーマル度（〇、△、×）、カジュアル度（〇、△、×）、
 発音記号（例：/əˈplɒd/）、意味（簡潔な日本語訳）、
@@ -76,7 +75,8 @@ def ask_gpt_about(word):
 関連語:
 ---
     """
-    response = openai.chat.completions.create(
+    print("🧠 ChatGPTに問い合わせ中...")
+    response = openai.ChatCompletion.create(  # ← ここ修正
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": system_msg},
