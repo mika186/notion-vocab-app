@@ -76,6 +76,7 @@ def ask_gpt_about(word):
 ---
     """
     print("🧠 ChatGPTに問い合わせ中...")
+    client = openai.OpenAI(api_key=OPENAI_API_KEY)  # ✅ ここを追加！
     response = openai.ChatCompletion.create(  # ← ここ修正
         model="gpt-3.5-turbo",
         messages=[
