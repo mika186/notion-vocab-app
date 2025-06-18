@@ -31,7 +31,7 @@ PROPERTY_MAP = {
 }
 
 CALLOUT_SECTIONS = [
-    "発音", "意味", "語源", "語感", "コロケーション", "例文", "自由記述", "関連語"
+    "発音", "意味", "語源", "語感", "コロケーション", "例文", "自由記述", "派生語", "類義語", "反意語"
 ]
 
 SECTION_ICON_COLOR = {
@@ -42,7 +42,9 @@ SECTION_ICON_COLOR = {
     "コロケーション": ("📌", "green_background"),
     "例文": ("📝", "blue_background"),
     "自由記述": ("🧠", "gray_background"),
-    "関連語": ("📚", "gray_background"),
+    "派生語": ("📘", "gray_background"),
+    "類義語": ("📗", "gray_background"),
+    "反意語": ("📕", "gray_background"),
 }
 
 def ask_gpt_about(word):
@@ -103,8 +105,18 @@ def parse_sections(gpt_text):
             buffer.append(line)
     if current_key:
         result[current_key] = "\n".join(buffer).strip()
-    return result
 
+    # 関連語セクションを派生語・類義語・反意語に分割
+    if "関連語" in result:
+        related = result.pop("関連語")
+        for label in ["派生語", "類義語", "反意語"]:
+            match = re.search(rf"{label}[:：](.*?)(?=\n(?:派生語|類義語|反意語)[:：]|\Z)", related, re.DOTALL)
+            if match:
+                result[label] = match.group(1).strip()
+            else:
+                result[label] = "該当情報が取得できませんでした。"
+
+    return result
 def update_notion_properties(page_id, fields):
     props = {}
     for key, value in fields.items():
