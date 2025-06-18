@@ -124,13 +124,35 @@ def format_example_sentences(raw_text):
     return "\n".join(formatted).strip()
 
 def render_related_words(raw_text):
+    labels = {
+        "派生語": "📘",
+        "類義語": "📗",
+        "反意語": "📕"
+    }
+
     blocks = []
-    for label, emoji in [("派生語", "📘"), ("類義語", "📗"), ("反意語", "📕")]:
-        match = re.search(rf"{label}[:：](.*?)(?=\n[A-Za-z\u3040-\u30FF\u4E00-\u9FFF]+[:：]|\Z)", raw_text, re.DOTALL)
-        content = match.group(1).strip() if match else "該当情報が取得できませんでした。"
-        content = f"{emoji} {label}\n{content.strip()}"
-        blocks.append(content)
+    for label, emoji in labels.items():
+        # 各カテゴリの本文を抽出
+        pattern = rf"{label}[:：](.*?)(?=\n(?:派生語|類義語|反意語)[:：]|\Z)"
+        match = re.search(pattern, raw_text, re.DOTALL)
+        if match:
+            content = match.group(1).strip()
+        else:
+            content = "該当情報が取得できませんでした。"
+
+        # 重複除去（類義語に反意語が入ってるなど）
+        lines = content.splitlines()
+        cleaned = []
+        for line in lines:
+            if not any(line.strip().startswith(prefix + ":") for prefix in labels.keys()):
+                cleaned.append(line.strip())
+        content = "\n".join(cleaned).strip()
+
+        block = f"{emoji} {label}\n{content}\n---"
+        blocks.append(block)
+
     return "\n\n".join(blocks)
+
 
 def append_callouts(page_id, content_map):
     children = []
